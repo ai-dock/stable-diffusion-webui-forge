@@ -86,7 +86,7 @@ To manage this service you can use `supervisorctl [start|stop|restart] forge` or
 
 **Vast.​ai**
 
-- [SD WebUI Forge:latest-cuda](https://link.ai-dock.org/template-vast-sd-webui)
+- [SD WebUI Forge:latest-cuda](https://link.ai-dock.org/template-vast-sd-webui-forge)
 
 ---
 
