@@ -1,0 +1,78 @@
+version: "3.8"
+# Compose file build variables set in .env
+services:
+  supervisor:
+    platform: linux/amd64
+    build:
+      context: ./build
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.10}
+        PYTORCH_VERSION: ${PYTORCH_VERSION:-2.3.1}
+        FORGE_TAG: ${FORGE_TAG:-}
+        IMAGE_BASE: ${IMAGE_BASE:-ghcr.io/ai-dock/python:${PYTHON_VERSION:-3.10}-v2-cuda-12.1.1-base-22.04}
+      tags:
+        - "ghcr.io/ai-dock/stable-diffusion-webui-forge:${IMAGE_TAG:-cuda-12.1.1-base-22.04}"
+        
+    image: ghcr.io/ai-dock/stable-diffusion-webui-forge:${IMAGE_TAG:-cuda-12.1.1-base-22.04}
+    
+    devices:
+      - "/dev/dri:/dev/dri"
+      # For AMD GPU
+      #- "/dev/kfd:/dev/kfd"
+    
+    volumes:
+      # Workspace
+      - ./workspace:${WORKSPACE:-/workspace/}:rshared
+      # You can share /workspace/storage with other non-WEBUI containers. See README
+      #- /path/to/common_storage:${WORKSPACE:-/workspace/}storage/:rshared
+      # Will echo to root-owned authorized_keys file;
+      # Avoids changing local file owner
+      - ./config/authorized_keys:/root/.ssh/authorized_keys_mount
+      - ./config/provisioning/default.sh:/opt/ai-dock/bin/provisioning.sh
+    
+    ports:
+        # SSH available on host machine port 2222 to avoid conflict. Change to suit
+        - ${SSH_PORT_HOST:-2222}:${SSH_PORT_LOCAL:-22}
+        # Caddy port for service portal
+        - ${SERVICEPORTAL_PORT_HOST:-1111}:${SERVICEPORTAL_PORT_HOST:-1111}
+        # WEBUI web interface
+        - ${FORGE_PORT_HOST:-7860}:${FORGE_PORT_HOST:-7860}
+        # Jupyter server
+        - ${JUPYTER_PORT_HOST:-8888}:${JUPYTER_PORT_HOST:-8888}
+        # Syncthing
+        - ${SYNCTHING_UI_PORT_HOST:-8384}:${SYNCTHING_UI_PORT_HOST:-8384}
+        - ${SYNCTHING_TRANSPORT_PORT_HOST:-22999}:${SYNCTHING_TRANSPORT_PORT_HOST:-22999}
+   
+    environment:
+        # Don't enclose values in quotes
+        - DIRECT_ADDRESS=${DIRECT_ADDRESS:-127.0.0.1}
+        - DIRECT_ADDRESS_GET_WAN=${DIRECT_ADDRESS_GET_WAN:-false}
+        - WORKSPACE=${WORKSPACE:-/workspace}
+        - WORKSPACE_SYNC=${WORKSPACE_SYNC:-false}
+        - CF_TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
+        - CF_QUICK_TUNNELS=${CF_QUICK_TUNNELS:-true}
+        - CIVITAI_TOKEN=${CIVITAI_TOKEN:-}
+        - HF_TOKEN=${HF_TOKEN:-}
+        - WEB_ENABLE_AUTH=${WEB_ENABLE_AUTH:-true}
+        - WEB_ENABLE_HTTPS${WEB_ENABLE_HTTPS:-false}
+        - WEB_USER=${WEB_USER:-user}
+        - WEB_PASSWORD=${WEB_PASSWORD:-password}
+        - SSH_PORT_HOST=${SSH_PORT_HOST:-2222}
+        - SSH_PORT_LOCAL=${SSH_PORT_LOCAL:-22}
+        - SERVICEPORTAL_PORT_HOST=${SERVICEPORTAL_PORT_HOST:-1111}
+        - SERVICEPORTAL_METRICS_PORT=${SERVICEPORTAL_METRICS_PORT:-21111}
+        - SERVICEPORTAL_URL=${SERVICEPORTAL_URL:-}
+        - FORGE_BRANCH=${FORGE_BRANCH:-}
+        - FORGE_ARGS=${FORGE_ARGS:-}
+        - FORGE_PORT_HOST=${FORGE_PORT_HOST:-7860}
+        - FORGE_PORT_LOCAL=${FORGE_PORT_LOCAL:-17860}
+        - FORGE_METRICS_PORT=${FORGE_METRICS_PORT:-27860}
+        - FORGE_URL=${FORGE_URL:-}
+        - JUPYTER_PORT_HOST=${JUPYTER_PORT_HOST:-8888}
+        - JUPYTER_METRICS_PORT=${JUPYTER_METRICS_PORT:-28888}
+        - JUPYTER_URL=${JUPYTER_URL:-}
+        - SERVERLESS=${SERVERLESS:-false}
+        - SYNCTHING_UI_PORT_HOST=${SYNCTHING_UI_PORT_HOST:-8384}
+        - SYNCTHING_TRANSPORT_PORT_HOST=${SYNCTHING_TRANSPORT_PORT_HOST:-22999}
+        - SYNCTHING_URL=${SYNCTHING_URL:-}
+        #- PROVISIONING_SCRIPT=${PROVISIONING_SCRIPT:-}

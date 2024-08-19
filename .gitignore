@@ -1,0 +1,6 @@
+workspace
+*__pycache__
+config/authorized_keys
+config/rclone
+tpdocs
+.env
