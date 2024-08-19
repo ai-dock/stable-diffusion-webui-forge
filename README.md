@@ -1,6 +1,6 @@
 [![Docker Build](https://github.com/ai-dock/stable-diffusion-webui-forge/actions/workflows/docker-build.yml/badge.svg)](https://github.com/ai-dock/stable-diffusion-webui/actions/workflows/docker-build.yml)
 
-# Stable Diffusion WebUI Docker Image
+# Stable Diffusion WebUI Forge Docker Image
 
 Run [Stable Diffusion WebUI Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge) in a docker container locally or in the cloud.
 
