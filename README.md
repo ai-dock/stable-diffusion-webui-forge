@@ -1,4 +1,4 @@
-[![Docker Build](https://github.com/ai-dock/stable-diffusion-webui-forge/actions/workflows/docker-build.yml/badge.svg)](https://github.com/ai-dock/stable-diffusion-webui/actions/workflows/docker-build.yml)
+[![Docker Build](https://github.com/ai-dock/stable-diffusion-webui-forge/actions/workflows/docker-build.yml/badge.svg)](https://github.com/ai-dock/stable-diffusion-webui-forge/actions/workflows/docker-build.yml)
 
 # Stable Diffusion WebUI Forge Docker Image
 
