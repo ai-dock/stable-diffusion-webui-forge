@@ -17,5 +17,5 @@ storage_map["stable_diffusion/models/reactor"]="/opt/stable-diffusion-webui-forg
 storage_map["stable_diffusion/models/swinIR"]="/opt/stable-diffusion-webui-forge/models/swinIR"
 storage_map["stable_diffusion/models/vae"]="/opt/stable-diffusion-webui-forge/models/VAE"
 storage_map["stable_diffusion/models/vae_approx"]="/opt/stable-diffusion-webui-forge/models/VAE-approx"
-
+storage_map["stable_diffusion/models/clip"]="/opt/stable-diffusion-webui-forge/models/text_encoder"
 # Add more mappings for other repository directories as needed
