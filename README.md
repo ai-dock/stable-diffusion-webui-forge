@@ -88,6 +88,8 @@ To manage this service you can use `supervisorctl [start|stop|restart] forge` or
 
 - [SD WebUI Forge:latest-cuda](https://link.ai-dock.org/template-vast-sd-webui-forge)
 
+- [SD WebUI Forge:latest-cuda + FLUX.1](https://link.ai-dock.org/template-vast-webui-forge-flux)
+
 ---
 
 _The author ([@robballantyne](https://github.com/robballantyne)) may be compensated if you sign up to services linked in this document. Testing multiple variants of GPU images in many different environments is both costly and time-consuming; This helps to offset costs_
