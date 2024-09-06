@@ -25,7 +25,6 @@ EXTENSIONS=(
     "https://github.com/AlUlkesh/stable-diffusion-webui-images-browser"
     "https://github.com/hako-mikan/sd-webui-regional-prompter"
     "https://github.com/Coyote-A/ultimate-upscale-for-automatic1111"
-    "https://github.com/Gourieff/sd-webui-reactor"
 )
 
 CHECKPOINT_MODELS=(
@@ -106,7 +105,7 @@ function provisioning_start() {
     ARGS_COMBINED="${PLATFORM_ARGS} $(cat /etc/forge_args.conf) ${PROVISIONING_ARGS}"
     
     # Start and exit because webui will probably require a restart
-    cd /opt/stable-diffusion-webui
+    cd /opt/stable-diffusion-webui-forge
         source "$FORGE_VENV/bin/activate"
         LD_PRELOAD=libtcmalloc.so python launch.py \
             ${ARGS_COMBINED}
@@ -212,19 +211,46 @@ function provisioning_has_valid_civitai_token() {
     fi
 }
 
-# Download from $1 URL to $2 file path
 function provisioning_download() {
+    local url=$1
+    local output_dir=$2
+    local auth_token=""
     if [[ -n $HF_TOKEN && $1 =~ ^https://([a-zA-Z0-9_-]+\.)?huggingface\.co(/|$|\?) ]]; then
         auth_token="$HF_TOKEN"
     elif 
         [[ -n $CIVITAI_TOKEN && $1 =~ ^https://([a-zA-Z0-9_-]+\.)?civitai\.com(/|$|\?) ]]; then
         auth_token="$CIVITAI_TOKEN"
     fi
-    if [[ -n $auth_token ]];then
-        wget --header="Authorization: Bearer $auth_token" -qnc --content-disposition --show-progress -e dotbytes="${3:-4M}" -P "$2" "$1"
-    else
-        wget -qnc --content-disposition --show-progress -e dotbytes="${3:-4M}" -P "$2" "$1"
+    
+     # Build the curl command as an array
+    local cmd=("curl" "-L" "-H" "Content-Type: application/json")
+    if [[ -n $auth_token ]]; then
+        cmd+=("-H" "Authorization: Bearer $auth_token")
     fi
+    cmd+=("$url" "--create-dirs" "--output-dir" "$output_dir" "-O" "-J" "--progress-bar")
+
+    # Initial percentage
+    local last_percentage=0
+    local current_percentage=0
+    local current_int=0
+
+    # Use curl to download the file and process the output
+    "${cmd[@]}" 2>&1 |
+    while IFS= read -d $'\r' -r p; do
+        # Extract the percentage from the progress bar output
+        if [[ $p =~ ([0-9]+(\.[0-9]+)?)% ]]; then
+            current_percentage=${BASH_REMATCH[1]}
+
+            # Extract the integer part of the percentage
+            current_int=${current_percentage%.*}
+
+            # Print the percentage only if it has increased by at least 5%
+            if [[ $current_int -lt 100 ]] && (( current_int >= last_percentage + 5 )); then
+                echo "Downloading $url (${current_percentage}%)..."
+                last_percentage=$current_int
+            fi
+        fi
+    done
 }
 
 provisioning_start
