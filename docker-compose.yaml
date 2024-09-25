@@ -7,7 +7,7 @@ services:
       context: ./build
       args:
         PYTHON_VERSION: ${PYTHON_VERSION:-3.10}
-        PYTORCH_VERSION: ${PYTORCH_VERSION:-2.3.1}
+        PYTORCH_VERSION: ${PYTORCH_VERSION:-2.4.1}
         FORGE_TAG: ${FORGE_TAG:-}
         IMAGE_BASE: ${IMAGE_BASE:-ghcr.io/ai-dock/python:${PYTHON_VERSION:-3.10}-v2-cuda-12.1.1-base-22.04}
       tags:
@@ -15,6 +15,16 @@ services:
         
     image: ghcr.io/ai-dock/stable-diffusion-webui-forge:${IMAGE_TAG:-cuda-12.1.1-base-22.04}
     
+
+    ## For Nvidia GPU's - You probably want to uncomment this
+    #deploy:
+    #  resources:
+    #    reservations:
+    #      devices:
+    #        - driver: nvidia
+    #          count: all
+    #          capabilities: [gpu]
+
     devices:
       - "/dev/dri:/dev/dri"
       # For AMD GPU
